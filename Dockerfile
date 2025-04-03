@@ -8,7 +8,8 @@ FROM base AS build
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
-RUN --mount=type=cache,id=pnpm pnpm install --frozen-lockfile
+# 删除 --mount，兼容 Railway
+RUN pnpm install --frozen-lockfile
 
 RUN pnpm run -r build
 
@@ -24,7 +25,6 @@ RUN cd /app-sqlite && \
 
 FROM base AS app-sqlite
 COPY --from=build /app-sqlite /app
-
 WORKDIR /app
 
 EXPOSE 4000
@@ -38,13 +38,10 @@ ENV DATABASE_URL="file:../data/wewe-rss.db"
 ENV DATABASE_TYPE="sqlite"
 
 RUN chmod +x ./docker-bootstrap.sh
-
 CMD ["./docker-bootstrap.sh"]
-
 
 FROM base AS app
 COPY --from=build /app /app
-
 WORKDIR /app
 
 EXPOSE 4000
@@ -57,5 +54,4 @@ ENV AUTH_CODE=""
 ENV DATABASE_URL=""
 
 RUN chmod +x ./docker-bootstrap.sh
-
 CMD ["./docker-bootstrap.sh"]
