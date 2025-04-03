@@ -10,7 +10,6 @@ WORKDIR /usr/src/app
 
 RUN --mount=type=cache,id=pnpm pnpm install --frozen-lockfile
 
-
 RUN pnpm run -r build
 
 RUN pnpm deploy --filter=server --prod /app
